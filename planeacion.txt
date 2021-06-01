@@ -1,0 +1,45 @@
+
+
+1. le programa que usa barreras
+- Multi Matrices
+for i in range(N columnas): forks().
+
+
+2. La implementación propia de barreras
+
+- Mutex (incremento del contador: cuántos faltan por llegar). Cada vez que llega uno a la cima, incrementa el contador protegido por el mutex y también se bloquea (con un semáforo).
+- Semáforos (para autobloquear los procesos, y que éste avise a los procesos que ya pueden continuar)
+
+
+* for i in range(count): sem_post();
+
+
+QUÉ NECESITAMOS?
+1. barrier.h
+expone los métodos
+- barrier_init() 
+- barrier_wait() -> Disminuye contador
+- barrier_destroy() --> free up memory
+
+
+2. matrix.c 
+La matriz resultado tiene que estar en memoria compartida. ??
+Inicializada a -1 o 0 o algo así. Sabemos a qué parte de la matriz tiene que escribir cada proceso.
+
+
+2. barrier.c
+
+
+3. 
+*** como juntar los resultados individuales de cada proceso/hilo?
+
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+------------------------------------------------------------------------------------------------
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+:():():()::():():()::():():()::():():()::():():()::():():()::():():()::():():()::():():()::():()

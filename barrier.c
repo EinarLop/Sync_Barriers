@@ -1,5 +1,4 @@
 #include "barrier.h"
-
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -17,17 +16,6 @@ INTEGRANTES:
 *Einar López Altamirano A01656259
 *Georgina Alejandra Gámez Melgar A01656818
 */
-
-
-
-// Creacion del semaforo
-// #define SEM_1 "procesos"
-// sem_t *semaforo1;
-// semaforo1 = sem_open(SEM_1,O_CREAT,S_IWGRP,num_procesos);
-// sem_close(semaforo1);
-// sem_unlink(semaforo1);
-// sem_wait(semaforo2);
-// sem_post(semaforo2);
 
 /*
 pthread_mutex_trylock(&mutex);

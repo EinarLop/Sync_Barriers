@@ -17,17 +17,11 @@ INTEGRANTES:
 *Georgina Alejandra Gámez Melgar A01656818
 */
 
-/*
-pthread_mutex_trylock(&mutex);
-counter++;
-pthread_mutex_unlock(&mutex);
-*/
-
 int initBarrier(Barrier *barrier){
+  printf("\tInicializando barrier tamaño %d\n", barrier->size);
   sem_unlink(barrier->semName);
-  sem_unlink(barrier->mutexName);
+  //sem_unlink(barrier->mutexName);
 
-  printf("\tInside initBarrier\n");
   int KEY = barrier->shmKey; 
   sem_t *sem;   // para hacer esperar a los procesos
   sem_t *mutex; // para count
@@ -46,43 +40,31 @@ int initBarrier(Barrier *barrier){
   }
 
   cmp->count = barrier->size;
-  printf("\tInit barr count: %d\n", cmp->count);
   // inicializar los semáforos. 
   
   sem = sem_open(barrier->semName, O_CREAT, S_IRWXU, 0);
   if (sem==SEM_FAILED) {
-    printf("Semaphore Chinga tu madrísima ERICANA\n");
+    printf("\tSemaphore fallo semaforo\n");
     exit(EXIT_FAILURE);
   }
 
-  mutex = sem_open(barrier->mutexName, O_CREAT, S_IRWXU, 1);
+  /* mutex = sem_open(barrier->mutexName, O_CREAT, S_IRWXU, 1);
   if (mutex ==SEM_FAILED) {
-    printf("Mutex Chinga tu madrísima ERICANA\n");
+    printf("\tMutex fallo mutex\n");
     exit(EXIT_FAILURE);
-  }
+  } */
   
-  printf("\tSe crearon el semaforo y el mutex exitosamente\n");
   sem_close(sem);
-  sem_close(mutex);
+  //sem_close(mutex);
 	return 0;
 }
 
 int waitBarrier(Barrier* barrier){
    
   sem_t *sem;
-  sem_t *mutex;
+  //sem_t *mutex;
 
   sem = sem_open(barrier->semName, 0);
-  mutex = sem_open(barrier->mutexName, 0);
-
-  // int currSem;
-  // int currMutex;
-  // sem_getvalue(sem, &currSem);
-  // sem_getvalue(mutex, &currMutex);
-  // printf("\tthis is sem %d\n", currSem);
-  // printf("\tthis is mutex %d\n", currMutex);
-  
-  printf("\tSe abrieron correctamente el semaforo y mutex\n");
 	int KEY = barrier->shmKey;
   
   // abrir memoria compartida y aumentar el contador
@@ -98,42 +80,44 @@ int waitBarrier(Barrier* barrier){
     return 1;
   }
 
-  printf("count is %d",cmp->count);
-  --(cmp->count);
-  printf("\tDecrement shared count %d\n", cmp->count);
+  (cmp->count)--;
+  printf("\tFaltan de llegar %d\n", cmp->count);
 
 	if(cmp->count==0){
-    printf("\tAll processes arrived. Continue\n");
-		printf("Barrier size %d\n ",barrier->size);
+    // printf("\tAll processes arrived. Continue\n");
     for(int i =0;i<barrier->size;i++){
-			printf("%d\n",i);
 			sem_post(sem); //Libera semaforo a todos
-			int currSem;
-			int currMutex;
-			sem_getvalue(sem, &currSem);
-			sem_getvalue(mutex, &currMutex);
-			printf("\tthis is sem %d\n", currSem);
-			printf("\tthis is mutex %d\n", currMutex);
-	  }
+  	}  
 	} else {
-		printf("\tLlegó un proceso\n");
-    sem_wait(sem);	
-    // espero a los demás
-    printf("Terminé de esperar\n");
+    sem_wait(sem);
+    // liberó la barrera
 	}
   sem_close(sem);
-  sem_close(mutex);
-	printf("SOY LIBREEEE\n");
- 
+  //sem_close(mutex);
 	return 0;
 }
 
 
-int clearBarrier(Barrier* barrier){
-  sem_t *sem;
-  sem_t *mutex;
-  sem = sem_open( barrier->semName, O_CREAT, S_IWGRP,0);
-  mutex = sem_open(barrier->mutexName, O_CREAT, S_IWGRP,1);
+int destroyBarrier(Barrier* barrier){
+  // Limpiar memoria compartida
+  // Borrar semáforos
+  int KEY = barrier->shmKey; 
+  int shmid;
+  if (( shmid = shmget(KEY,  sizeof(compartir), S_IRWXU)) < 0 ) {
+    perror("Error en el shmget 1");
+    return 1;
+  }
+
+  struct shmid_ds ds;
+  
+  if (shmctl(shmid, IPC_RMID, &ds) < 0) {
+    perror("Error al eliminar el segmento de memoria compartida 1");
+    return 1;
+  }
+
+  sem_unlink(barrier->semName);
+  //sem_unlink(barrier->mutexName);
+
 	return 0;
 }
 

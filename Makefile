@@ -1,14 +1,14 @@
 finally: program
 	./program
 
-program: barrier.o mm.o
-	gcc -o program barrier.o mm.o -pthread
+program: barrier.o mat.o
+	gcc -o program barrier.o mat.o -pthread
 
 barrier.o:
 	gcc -c -pthread barrier.c
 
-mm.o:
-	gcc -c -pthread mm.c
+mat.o:
+	gcc -c -pthread mat.c
 
 clean:
-	rm barrier.o mm.o program
+	rm barrier.o mat.o program

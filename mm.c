@@ -9,8 +9,8 @@
 #define NUM_PROC 4
 
 void randwait(int secs) {
-  int x = (int) (secs*drand48() + 1);
-  sleep(x);
+  int x = (int) (secs*drand48()+ 1);
+  usleep(x);
 }
 
 int main() {
@@ -30,21 +30,20 @@ int main() {
 
   for (int id=0; id<NUM_PROC; id++) {
     if ((child_pid = fork()) == 0) {
-        printf("Hijo %d PID: %d\n", id, getpid());
-
-        printf("Soy el hijoo %d\n", id);
-        
-        randwait(1);
+        printf("COMIENZA proceso %d\n", id);
+        randwait(50); // multiplicacion
         // llegué a la cima
+        printf("LLEGÓ a la cima proceso %d\n", id);
         waitBarrier(barr);
+        printf("CONTINÚA proceso %d\n", id);
         // después de la barrera
-        randwait(1);
         exit(0);
     }
   }
   
   while ((wpid = wait(&status)) > 0);
-  printf("All done\n");
+  printf("All processes done. Parent exits\n");
   
+  destroyBarrier(barr);
   return 0;
 }

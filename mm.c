@@ -42,7 +42,7 @@ int main() {
   }
   
   while ((wpid = wait(&status)) > 0);
-  printf("All processes done. Parent exits\n");
+  printf("Terminaron todos los procesos. Padre existe\n");
   
   destroyBarrier(barr);
   return 0;

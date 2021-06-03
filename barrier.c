@@ -19,13 +19,15 @@ INTEGRANTES:
 
 int initBarrier(Barrier *barrier){
   printf("\tInicializando barrier tamaño %d\n", barrier->size);
+  
   sem_unlink(barrier->semName);
-  //sem_unlink(barrier->mutexName);
+  sem_unlink(barrier->mutexName);
 
   int KEY = barrier->shmKey; 
   sem_t *sem;   // para hacer esperar a los procesos
   sem_t *mutex; // para count
 
+  
   // Crear memoria compartida e inicializar su valor (count).
   int shmid1;
   if ( (shmid1 = shmget(KEY, sizeof(compartir), IPC_CREAT | S_IRWXU)) < 0 ) {
@@ -48,23 +50,24 @@ int initBarrier(Barrier *barrier){
     exit(EXIT_FAILURE);
   }
 
-  /* mutex = sem_open(barrier->mutexName, O_CREAT, S_IRWXU, 1);
+  mutex = sem_open(barrier->mutexName, O_CREAT, S_IRWXU, 1);
   if (mutex ==SEM_FAILED) {
     printf("\tMutex fallo mutex\n");
     exit(EXIT_FAILURE);
-  } */
+  } 
   
   sem_close(sem);
-  //sem_close(mutex);
+  sem_close(mutex);
 	return 0;
 }
 
 int waitBarrier(Barrier* barrier){
    
   sem_t *sem;
-  //sem_t *mutex;
+  sem_t *mutex;
 
   sem = sem_open(barrier->semName, 0);
+	mutex = sem_open(barrier->mutexName, 0);
 	int KEY = barrier->shmKey;
   
   // abrir memoria compartida y aumentar el contador
@@ -79,8 +82,9 @@ int waitBarrier(Barrier* barrier){
     perror("Error en shmat");
     return 1;
   }
-
+	sem_wait(mutex);
   (cmp->count)--;
+	sem_post(mutex);
   printf("\tFaltan de llegar %d\n", cmp->count);
 
 	if(cmp->count==0){
@@ -93,7 +97,7 @@ int waitBarrier(Barrier* barrier){
     // liberó la barrera
 	}
   sem_close(sem);
-  //sem_close(mutex);
+  sem_close(mutex);
 	return 0;
 }
 
@@ -116,7 +120,7 @@ int destroyBarrier(Barrier* barrier){
   }
 
   sem_unlink(barrier->semName);
-  //sem_unlink(barrier->mutexName);
+  sem_unlink(barrier->mutexName);
 
 	return 0;
 }

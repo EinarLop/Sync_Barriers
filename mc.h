@@ -2,7 +2,7 @@
 #define RESULTVECTOR_H
 
 typedef struct resultVector {
-  int vector[2];
+  int vector[3];
 } resultVector;
 
 #endif

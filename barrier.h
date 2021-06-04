@@ -1,7 +1,7 @@
 #ifndef BARRIER_H
 #define BARRIER_H
 
-typedef struct Barrier{
+typedef struct Barrier {
   int size; // procesos
   int shmKey; // llave identificadora a la ShM
   char semName[20];  // semaphore name

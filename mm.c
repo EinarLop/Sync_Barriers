@@ -16,8 +16,9 @@ void randwait(int secs) {
 int main() {
   
   Barrier * barr = (Barrier*) malloc(sizeof(Barrier));
-  char semName[6] = "Einar";
-  char mutexName[7] = "EinarM";
+  char semName[6] = "BarSe";
+  char mutexName[7] = "BarMut"; 
+  
 
   strcpy(barr->semName, semName);
   barr->size = NUM_PROC;
@@ -30,19 +31,19 @@ int main() {
 
   for (int id=0; id<NUM_PROC; id++) {
     if ((child_pid = fork()) == 0) {
-        printf("COMIENZA proceso %d\n", id);
+        printf("The process %d begins\n", id);
         randwait(50); // multiplicacion
         // llegué a la cima
-        printf("LLEGÓ a la cima proceso %d\n", id);
+        printf("Process %d reached the checkpoint\n", id);
         waitBarrier(barr);
-        printf("CONTINÚA proceso %d\n", id);
+        printf("I am free \n");
         // después de la barrera
         exit(0);
     }
   }
   
   while ((wpid = wait(&status)) > 0);
-  printf("Terminaron todos los procesos. Padre existe\n");
+  printf("All processes end\n");
   
   destroyBarrier(barr);
   return 0;

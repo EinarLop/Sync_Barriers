@@ -18,26 +18,26 @@ INTEGRANTES:
 */
 
 int initBarrier(Barrier *barrier){
-  printf("\tInicializando barrier tamaño %d\n", barrier->size);
+  printf("\tInitializing barrier of size %d\n", barrier->size);
   
   sem_unlink(barrier->semName);
   sem_unlink(barrier->mutexName);
 
   int KEY = barrier->shmKey; 
   sem_t *sem;   // para hacer esperar a los procesos
-  sem_t *mutex; // para count
+  sem_t *mutex; // to protect variable count
 
   
   // Crear memoria compartida e inicializar su valor (count).
   int shmid1;
   if ( (shmid1 = shmget(KEY, sizeof(compartir), IPC_CREAT | S_IRWXU)) < 0 ) {
-    perror("Error en shmget");
+    perror("Error in shmget while creating barrier");
     return 1;
   }
 
   compartir *cmp = (compartir*) shmat(shmid1, 0, 0);
   if (cmp == (void *) -1) {
-    perror("Error en shmat");
+    perror("Error in shmat while creating barrier");
     return 1;
   }
 
@@ -46,13 +46,13 @@ int initBarrier(Barrier *barrier){
   
   sem = sem_open(barrier->semName, O_CREAT, S_IRWXU, 0);
   if (sem==SEM_FAILED) {
-    printf("\tSemaphore fallo semaforo\n");
+    printf("\tSemaphore failed\n");
     exit(EXIT_FAILURE);
   }
 
   mutex = sem_open(barrier->mutexName, O_CREAT, S_IRWXU, 1);
   if (mutex ==SEM_FAILED) {
-    printf("\tMutex fallo mutex\n");
+    printf("\tMutex failed\n");
     exit(EXIT_FAILURE);
   } 
   
@@ -62,7 +62,6 @@ int initBarrier(Barrier *barrier){
 }
 
 int waitBarrier(Barrier* barrier){
-   
   sem_t *sem;
   sem_t *mutex;
 
@@ -73,22 +72,21 @@ int waitBarrier(Barrier* barrier){
   // abrir memoria compartida y aumentar el contador
   int shmid1;
   if ( (shmid1 = shmget(KEY, sizeof(compartir), IPC_CREAT | S_IRWXU)) < 0 ) {
-    perror("Error en shmget");
+    perror("Error in shmget in wait barrier");
     return 1;
   }
   
   compartir *cmp = (compartir*) shmat(shmid1, 0, 0);
   if (cmp == (void *) -1) {
-    perror("Error en shmat");
+    perror("Error in shmat in wait barrier");
     return 1;
   }
 	sem_wait(mutex);
   (cmp->count)--;
 	sem_post(mutex);
-  printf("\tFaltan de llegar %d\n", cmp->count);
+  printf("\t we are still waiting for %d processes\n", cmp->count);
 
 	if(cmp->count==0){
-    // printf("\tAll processes arrived. Continue\n");
     for(int i =0;i<barrier->size;i++){
 			sem_post(sem); //Libera semaforo a todos
   	}  
@@ -121,9 +119,29 @@ int destroyBarrier(Barrier* barrier){
 
   sem_unlink(barrier->semName);
   sem_unlink(barrier->mutexName);
-
+	printf("Barrier cleaned\n");
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 int pthread_barrier_init(pthread_barrier_t * barrier, const pthread_barrierattr_t * attr, unsigned count);

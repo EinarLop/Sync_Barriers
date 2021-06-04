@@ -3,7 +3,6 @@
 - Multi Matrices
 for i in range(N columnas): forks().
 
-
 2. La implementación propia de barreras
 
 - Mutex (incremento del contador: cuántos faltan por llegar). Cada vez que llega uno a la cima, incrementa el contador protegido por el mutex y también se bloquea (con un semáforo).
@@ -11,7 +10,6 @@ for i in range(N columnas): forks().
 
 
 * for i in range(count): sem_post();
-
 
 QUÉ NECESITAMOS?
 1. barrier.h
@@ -34,15 +32,6 @@ Inicializada a -1 o 0 o algo así. Sabemos a qué parte de la matriz tiene que e
 
 
 --------------------------------------------------
-
-
-
-
-
-Hay que procrastinar para ERIC o nos mienta la madre :c
-
-
-()
 
 
 
